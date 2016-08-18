@@ -51,7 +51,7 @@ exports.handleRequest = function (req, res) {
       fs.readFile(__dirname + '/public/loading.html', 'utf-8', function(err, results) {
         if (err) {
           res.end(results);
-        } else {
+        } else { 
           res.end(results);  
         }
       }); 
