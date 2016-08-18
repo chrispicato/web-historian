@@ -22,7 +22,6 @@ exports.handleRequest = function (req, res) {
     } else {
       return new Promise(function(fulfill, reject) {
         fs.readFile(archive.paths.archivedSites + '/' + url, 'utf-8', function(err, results) {
-          console.log(__dirname + '../sites/' + url);
           if (err) {
             console.log(err);
             res.writeHead(404, httpHelpers.headers);
@@ -33,25 +32,8 @@ exports.handleRequest = function (req, res) {
         });
       });
     }
-    // } else if (archive.isUrlInList(url, function(url) {
-    //   return true;
-    // }) === true) {
-    //   console.log('testing');
-    // } else {
-    //   res.writeHead(404, httpHelpers.headers);
-    //   res.end();
-    // else if (archive.isUrlInList(parsedUrl) && archive.isUrlArchived(parsedUrl)) {
-    //   return new Promise(function(fulfill, reject) {
-    //     fs.readFile('./archives/sites/' + parsedUrl, 'utf-8', function(err, results) {
-    //       if (err) {
-    //         console.log(err);
-    //       } else {
-    //         res.end(results);
-    //       }
-    //     });
-    //   });
-    // }
-  } else {
+  }
+  if (req.method === 'POST') {
 
   }
 
