@@ -3,6 +3,7 @@ var fs = require('fs');
 var archive = require('../helpers/archive-helpers');
 var Promise = require('bluebird');
 var httpHelpers = require('../web/http-helpers');
+var querystring = require('querystring');
 // require more modules/folders here!
 
 exports.handleRequest = function (req, res) {
@@ -34,10 +35,25 @@ exports.handleRequest = function (req, res) {
     }
   }
   if (req.method === 'POST') {
-
+    var datastream = '';
+    req.on('data', function(chunk) {
+      datastream += chunk;
+    });
+    req.on('end', function(chunk) {
+      var queried = querystring.parse(datastream);
+      archive.addUrlToList(queried.url + '\n');
+      res.writeHead(302, httpHelpers.headers); 
+      fs.readFile(__dirname + '/public/loading.html', 'utf-8', function(err, results) {
+        if (err) {
+          res.end(results);
+        } else {
+          res.end(results);  
+        }
+      }); 
+    });
   }
 
 
 
-  res.end(archive.paths.list);
+  //res.end(archive.paths.list);
 };
