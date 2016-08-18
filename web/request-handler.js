@@ -43,18 +43,26 @@ exports.handleRequest = function (req, res) {
       var queried = querystring.parse(datastream);
       //if (!archive.isUrlInList)
       archive.isUrlInList(queried.url).then(function(trueOrFalse) {
-        console.log(trueOrFalse, 'trueOrFalse Label');
+        archive.isUrlArchived(queried.url, function (trueOrFalse) {
+          fs.readFile(archive.paths.archivedSites + '/' + queried.url, 'utf-8', function(err, results) {
+            if (err) {
+              console.log(err);
+            } else {
+              res.end(results);
+            }
+          });
+        });
       }, function(trueOrFalse) {
         archive.addUrlToList(queried.url + '\n');
+        res.writeHead(302, httpHelpers.headers); 
+        fs.readFile(__dirname + '/public/loading.html', 'utf-8', function(err, results) {
+          if (err) {
+            res.end(results);
+          } else { 
+            res.end(results);  
+          }
+        }); 
       });
-      res.writeHead(302, httpHelpers.headers); 
-      fs.readFile(__dirname + '/public/loading.html', 'utf-8', function(err, results) {
-        if (err) {
-          res.end(results);
-        } else { 
-          res.end(results);  
-        }
-      }); 
     });
   }
 

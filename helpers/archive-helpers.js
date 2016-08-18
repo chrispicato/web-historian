@@ -81,8 +81,8 @@ exports.isUrlArchived = function(url, callback) {
 };
 
 exports.downloadUrls = function(arrayOfUrls) {
+  console.log('here');
   _.each(arrayOfUrls, function(url) {
-    var newFile = fs.openSync(exports.paths.archivedSites + '/' + url, 'w');
     request('http://' + url, function(err, res, body) {
       if (err) {
         console.log(err);
