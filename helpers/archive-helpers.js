@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
+var request = require('request');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -25,17 +26,87 @@ exports.initialize = function(pathsObj) {
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function() {
+exports.readListOfUrls = function(callback) {
+  return new Promise(function(fulfill, reject) {
+    fs.readFile(exports.paths.list, 'utf-8', function(err, res) {
+      if (err) {
+        reject(err);
+      } else {
+        var listOfURLs = res.split('\n');
+        if (callback) {
+          fulfill(callback(listOfURLs));
+        }
+        fulfill(listOfURLs);
+      }
+    });
+  });
 };
 
-exports.isUrlInList = function() {
+exports.isUrlInList = function(targetURL, callback) {
+  return new Promise (function(fulfill, reject) {
+    exports.readListOfUrls(function(listOfURLs) {
+      if (callback) {
+        fulfill(callback(_.contains(listOfURLs, targetURL)));
+      }
+    });
+  });
 };
 
-exports.addUrlToList = function() {
+exports.addUrlToList = function(url, callback) {
+  fs.appendFile(exports.paths.list, url, function(err) {
+    if (err) {
+      console.log(err);
+    } else {
+      callback(url);
+    }
+  });
 };
 
-exports.isUrlArchived = function() {
+exports.isUrlArchived = function(url, callback) {
+  //var siteName = currentUrl.slice(currentUrl.indexOf('www.') + 4, currentUrl.indexOf('.com'));
+  fs.readFile(exports.paths.archivedSites + '/' + url, function(err, res) {
+    if (err) {
+      console.log(exports.paths.archivedSites + url);
+      callback(false);
+    } else {
+      callback(true);
+    }
+  });
 };
 
-exports.downloadUrls = function() {
+exports.downloadUrls = function(arrayOfUrls) {
+  _.each(arrayOfUrls, function(url) {
+    var newFile = fs.openSync(exports.paths.archivedSites + '/' + url, 'w');
+    request('http://' + url, function(err, res, body) {
+      if (err) {
+        console.log(err);
+      } else {
+        fs.writeFile(exports.paths.archivedSites + '/' + url, body, function(err) {
+          if (err) {
+            console.log(err);
+          }
+          console.log('file saved');
+        });
+      }
+    });
+  });
+  // var listOfURLs = exports.readListOfUrls();
+  // for (var i = 0; i < listOfURLs.length; i++) {
+  //   var currentUrl = listOfURLs[i];
+  //   if (!exports.isUrlArchived(currentUrl)) {
+  //     var newFile = fs.openSync(exports.paths.archivedSites + '/' + url, 'w');
+  //     request(url, function(err, res, body) {
+  //       if (err) {
+  //         console.log(err);
+  //       } else {
+  //         fs.writeFile(exports.paths.archivedSites + '/' + url, body, function(err) {
+  //           if (err) {
+  //             console.log(err);
+  //           }
+  //           console.log('file saved');
+  //         });
+  //       }
+  //     });
+  //   }
+  // }
 };
