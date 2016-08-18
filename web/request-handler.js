@@ -41,7 +41,12 @@ exports.handleRequest = function (req, res) {
     });
     req.on('end', function(chunk) {
       var queried = querystring.parse(datastream);
-      archive.addUrlToList(queried.url + '\n');
+      //if (!archive.isUrlInList)
+      archive.isUrlInList(queried.url).then(function(trueOrFalse) {
+        console.log(trueOrFalse, 'trueOrFalse Label');
+      }, function(trueOrFalse) {
+        archive.addUrlToList(queried.url + '\n');
+      });
       res.writeHead(302, httpHelpers.headers); 
       fs.readFile(__dirname + '/public/loading.html', 'utf-8', function(err, results) {
         if (err) {

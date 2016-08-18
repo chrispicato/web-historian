@@ -47,9 +47,10 @@ exports.isUrlInList = function(targetURL, callback) {
   callback = callback || _.identity;
   return new Promise (function(fulfill, reject) {
     exports.readListOfUrls(function(listOfURLs) {
-      console.log(listOfURLs, targetURL);
-      if (callback) {
-        fulfill(callback(_.contains(listOfURLs, targetURL)));
+      if (_.contains(listOfURLs, targetURL)) {
+        fulfill(callback(true));
+      } else {
+        reject(callback(false));
       }
     });
   });
