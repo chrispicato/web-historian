@@ -27,6 +27,7 @@ exports.initialize = function(pathsObj) {
 // modularize your code. Keep it clean!
 
 exports.readListOfUrls = function(callback) {
+  callback = callback || _.identity;
   return new Promise(function(fulfill, reject) {
     fs.readFile(exports.paths.list, 'utf-8', function(err, res) {
       if (err) {
@@ -43,8 +44,10 @@ exports.readListOfUrls = function(callback) {
 };
 
 exports.isUrlInList = function(targetURL, callback) {
+  callback = callback || _.identity;
   return new Promise (function(fulfill, reject) {
     exports.readListOfUrls(function(listOfURLs) {
+      console.log(listOfURLs, targetURL);
       if (callback) {
         fulfill(callback(_.contains(listOfURLs, targetURL)));
       }
@@ -53,20 +56,22 @@ exports.isUrlInList = function(targetURL, callback) {
 };
 
 exports.addUrlToList = function(url, callback) {
+  callback = callback || _.identity;
   fs.appendFile(exports.paths.list, url, function(err) {
     if (err) {
       console.log(err);
     } else {
-      callback(url);
+      return callback(url);
     }
   });
 };
 
 exports.isUrlArchived = function(url, callback) {
+  callback = callback || _.identity;
   //var siteName = currentUrl.slice(currentUrl.indexOf('www.') + 4, currentUrl.indexOf('.com'));
   fs.readFile(exports.paths.archivedSites + '/' + url, function(err, res) {
     if (err) {
-      console.log(exports.paths.archivedSites + url);
+      console.log(err);
       callback(false);
     } else {
       callback(true);
